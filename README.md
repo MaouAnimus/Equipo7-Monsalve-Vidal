@@ -1,2 +1,2 @@
-# Equipo7JAVA
+# Equipo7
 Huarto Hogar

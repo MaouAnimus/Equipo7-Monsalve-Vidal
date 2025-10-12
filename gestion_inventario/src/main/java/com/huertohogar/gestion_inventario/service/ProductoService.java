@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.huertohogar.gestion_inventario.model.Productos;
 import com.huertohogar.gestion_inventario.repository.ProductosRepository;
 
+
 @Service
 public class ProductoService {
 	
@@ -27,6 +28,8 @@ public class ProductoService {
     }
 
     public void deleteById(Long id) {
-    	productrepo.deleteById(id);
+    	Productos producto = productrepo.findById(id).orElseThrow(() 
+    			-> new RuntimeException("Producto no encontrado con id: " + id));
+    	productrepo.delete(producto);
     }
 }

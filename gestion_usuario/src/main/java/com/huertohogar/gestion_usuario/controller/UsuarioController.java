@@ -2,44 +2,42 @@ package com.huertohogar.gestion_usuario.controller;
 
 import com.huertohogar.gestion_usuario.model.UsuarioModel;
 import com.huertohogar.gestion_usuario.service.UsuarioService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuarios")
-@RequiredArgsConstructor
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+    @Autowired
+    private UsuarioService usuarioService;
 
-    @GetMapping
-    public ResponseEntity<List<UsuarioModel>> getAllUsuarios() {
-        return ResponseEntity.ok(usuarioService.getAllUsuarios());
+    @PostMapping
+    public UsuarioModel crearUsuario(@RequestBody UsuarioModel usuario) {
+        return usuarioService.crearUsuario(usuario);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioModel> getUsuarioById(@PathVariable Long id) {
-        return usuarioService.getUsuarioById(id)
+    public ResponseEntity<UsuarioModel> obtenerUsuario(@PathVariable Long id) {
+        return usuarioService.obtenerUsuario(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<UsuarioModel> createUsuario(@RequestBody UsuarioModel usuario) {
-        return ResponseEntity.ok(usuarioService.createUsuario(usuario));
+    @GetMapping
+    public List<UsuarioModel> listarUsuarios() {
+        return usuarioService.listarUsuarios();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioModel> updateUsuario(@PathVariable Long id, @RequestBody UsuarioModel usuarioDetails) {
-        return ResponseEntity.ok(usuarioService.updateUsuario(id, usuarioDetails));
+    public UsuarioModel actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioModel usuario) {
+        return usuarioService.actualizarUsuario(id, usuario);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
-        usuarioService.deleteUsuario(id);
-        return ResponseEntity.noContent().build();
+    public void eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
     }
 }

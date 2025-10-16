@@ -27,7 +27,7 @@ public class Productos {
     private String imagen;
 
     @Column(length = 100, nullable = true)
-    private String categoria;
+    private Categoria categoria;
 
     @Column(length = 100, nullable = true)
     private String subcategoria;

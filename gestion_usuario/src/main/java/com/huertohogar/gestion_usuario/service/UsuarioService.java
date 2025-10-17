@@ -2,44 +2,45 @@ package com.huertohogar.gestion_usuario.service;
 
 import com.huertohogar.gestion_usuario.model.UsuarioModel;
 import com.huertohogar.gestion_usuario.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-    public List<UsuarioModel> getAllUsuarios() {
-        return usuarioRepository.findAll();
+    public UsuarioModel crearUsuario(UsuarioModel usuario) {
+        return usuarioRepository.save(usuario);
     }
 
-    public Optional<UsuarioModel> getUsuarioById(Long id) {
+    public Optional<UsuarioModel> obtenerUsuario(Long id) {
         return usuarioRepository.findById(id);
     }
 
-    public UsuarioModel createUsuario(UsuarioModel usuario) {
-        return usuarioRepository.save(usuario);
+    public List<UsuarioModel> listarUsuarios() {
+        return usuarioRepository.findAll();
     }
 
-    public UsuarioModel updateUsuario(Long id, UsuarioModel usuarioDetails) {
-        UsuarioModel usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
-        usuario.setFirstName(usuarioDetails.getFirstName());
-        usuario.setLastName(usuarioDetails.getLastName());
-        usuario.setEmail(usuarioDetails.getEmail());
-        usuario.setUsername(usuarioDetails.getUsername());
-        usuario.setPassword(usuarioDetails.getPassword());
-        return usuarioRepository.save(usuario);
+    public UsuarioModel actualizarUsuario(Long id, UsuarioModel nuevoUsuario) {
+        return usuarioRepository.findById(id)
+                .map(u -> {
+                    u.setUsername(nuevoUsuario.getUsername());
+                    u.setEmail(nuevoUsuario.getEmail());
+                    u.setFirstName(nuevoUsuario.getFirstName());
+                    u.setLastName(nuevoUsuario.getLastName());
+                    return usuarioRepository.save(u);
+                }).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
-    public void deleteUsuario(Long id) {
-        UsuarioModel usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
-        usuarioRepository.delete(usuario);
+    public void eliminarUsuario(Long id) {
+        usuarioRepository.deleteById(id);
+    }
+
+    public Optional<UsuarioModel> buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username);
     }
 }

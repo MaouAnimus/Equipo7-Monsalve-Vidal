@@ -2,8 +2,8 @@ package com.huertohogar.usuariosmicroservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.huertohogar.usuariosmicroservice.entity.UsuarioEntity;
+import com.huertohogar.usuariosmicroservice.entity.ProductEntity;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
+public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 }

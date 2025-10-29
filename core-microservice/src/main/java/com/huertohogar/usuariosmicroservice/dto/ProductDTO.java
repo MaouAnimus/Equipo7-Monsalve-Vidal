@@ -5,9 +5,10 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioDTO {
+public class ProductDTO {
     private Long id;
     private String nombre;
-    private String email;
-    private String rol;
+    private Double precio;
+    private Integer stock;
+    private String categoria;
 }

@@ -1,7 +1,8 @@
 Huerto Hogar – Microservicios
 
-Este proyecto esta hecho en el entorno spring tools suite en Spring Boot, cada servicio tiene sus correspondientes endpoints, y acá daré la forma de probar cada 
-microservicio 
+Este proyecto está hecho en el entorno Spring Tools Suite en Spring Boot.
+Cada servicio tiene sus correspondientes endpoints, y acá se detalla la forma de probar cada microservicio.
+
 1. Usuario Microservice
 
 Archivo: usuario-microservice
@@ -10,19 +11,43 @@ Nombre interno: usuario-microservice
 
 Endpoints principales
 
-GET	http://localhost:8080/api/usuarios	Obtener todos los usuarios	—
-GET	http://localhost:8080/api/usuarios/{id}	Obtener usuario por ID	—
-POST	http://localhost:8080/api/usuarios	Crear nuevo usuario	
-{ 
-"nombre": "Jonathan", 
-"correo": "jon.vidals@example.com", 
-"password": "1234" 
-}
-PUT	http://localhost:8080/api/usuarios/{id}	Actualizar usuario	
-{ "nombre": "Jonathan Vidal" }
-DELETE	http://localhost:8080/api/usuarios/{id}
+GET
+http://localhost:8080/usuarios
 
------------------------------------------------
+Obtener todos los usuarios
+
+GET
+http://localhost:8080/usuarios/{id}
+
+Obtener usuario por ID
+
+POST
+http://localhost:8080/usuarios
+
+Crear nuevo usuario
+
+{
+  "nombre": "Jonathan",
+  "correo": "jon.vidals@example.com",
+  "password": "1234"
+}
+
+
+PUT
+http://localhost:8080/usuarios/{id}
+
+Actualizar usuario
+
+{
+  "nombre": "Jonathan Vidal"
+}
+
+
+DELETE
+http://localhost:8080/usuarios/{id}
+
+Eliminar usuario
+
 2. Core Microservice
 
 Archivo: core-microservice
@@ -31,16 +56,44 @@ Nombre interno: core-microservice
 
 Endpoints principales
 
-GET	http://localhost:8082/api/productos	Obtener todos los productos	—
-GET	http://localhost:8082/api/productos/{id}	Obtener producto por ID	—
-POST	http://localhost:8082/api/productos	Crear producto nuevo	{ "nombre": "Tomate Cherry", 
-"precio": 1200, 
-"stock": 50, 
-"categoria": "Hortalizas" }
-PUT	http://localhost:8082/api/productos/{id}	Actualizar producto	{ "stock": 30 }
-DELETE	http://localhost:8082/api/productos/{id}
+GET
+http://localhost:8082/productos
 
-—-------------------------------------------
+Obtener todos los productos
+
+GET
+http://localhost:8082/productos/{id}
+
+Obtener producto por ID
+
+POST
+http://localhost:8082/productos
+
+Crear producto nuevo
+
+{
+  "nombre": "Tomate Cherry",
+  "precio": 1200,
+  "stock": 50,
+  "categoria": "Hortalizas"
+}
+
+
+PUT
+http://localhost:8082/productos/{id}
+
+Actualizar producto
+
+{
+  "stock": 30
+}
+
+
+DELETE
+http://localhost:8082/productos/{id}
+
+Eliminar producto
+
 3. Carrito Microservice
 
 Archivo: carrito-microservice
@@ -48,12 +101,40 @@ Puerto: 8083
 Nombre interno: carrito-microservice
 
 Endpoints principales
-Método	Endpoint	Descripción	Ejemplo cuerpo (JSON)
-GET	http://localhost:8083/api/carrito	Obtener todos los carritos	—
-GET	http://localhost:8083/api/carrito/{id}	Obtener carrito por ID	—
-POST	http://localhost:8083/api/carrito	Crear un carrito	{ "usuarioId": 1,
-"productoId": 2, 
-"cantidad": 3 
+
+GET
+http://localhost:8083/carrito
+
+Obtener todos los carritos
+
+GET
+http://localhost:8083/carrito/{id}
+
+Obtener carrito por ID
+
+POST
+http://localhost:8083/carrito
+
+Crear un carrito
+
+{
+  "usuarioId": 1,
+  "productoId": 2,
+  "cantidad": 3
 }
-PUT	http://localhost:8083/api/carrito/{id}	Actualizar cantidad o producto	{ "cantidad": 5 }
-DELETE	http://localhost:8083/api/carrito/{id}
+
+
+PUT
+http://localhost:8083/carrito/{id}
+
+Actualizar cantidad o producto
+
+{
+  "cantidad": 5
+}
+
+
+DELETE
+http://localhost:8083/carrito/{id}
+
+Eliminar carrito

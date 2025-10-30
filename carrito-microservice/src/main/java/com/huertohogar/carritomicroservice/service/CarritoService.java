@@ -1,12 +1,13 @@
 package com.huertohogar.carritomicroservice.service;
 
 import java.util.List;
-import com.huertohogar.carritomicroservice.dto.CarritoDTO;
+
+import com.huertohogar.carritomicroservice.entity.CarritoEntity;
 
 public interface CarritoService {
-    List<CarritoDTO> listarCarritos();
-    CarritoDTO obtenerCarritoPorId(Long id);
-    CarritoDTO crearCarrito(CarritoDTO carrito);
-    CarritoDTO actualizarCarrito(Long id, CarritoDTO carrito);
+    List<CarritoEntity> listarCarritos();
+    CarritoEntity obtenerCarritoPorId(Long id);
+    CarritoEntity crearCarrito(CarritoEntity carrito);
+    CarritoEntity actualizarCarrito(Long id, CarritoEntity carrito);
     void eliminarCarrito(Long id);
 }

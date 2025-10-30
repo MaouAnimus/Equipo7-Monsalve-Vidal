@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.huertohogar.coremicroservice.dto.ProductDTO;
+import com.huertohogar.coremicroservice.entity.ProductEntity;
 import com.huertohogar.coremicroservice.service.ProductService;
 
 @RestController
@@ -18,13 +18,13 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> listarProductos() {
+    public ResponseEntity<List<ProductEntity>> listarProductos() {
         return ResponseEntity.ok(productService.listarProductos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> obtenerProducto(@PathVariable Long id) {
-        ProductDTO producto = productService.obtenerProductoPorId(id);
+    public ResponseEntity<ProductEntity> obtenerProducto(@PathVariable("id") Long id) {
+        ProductEntity producto = productService.obtenerProductoPorId(id);
         if (producto == null) {
             return ResponseEntity.notFound().build();
         }
@@ -32,13 +32,14 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> crearProducto(@RequestBody ProductDTO producto) {
-        return ResponseEntity.ok(productService.crearProducto(producto));
+    public ResponseEntity<ProductEntity> crearProducto(@RequestBody ProductEntity producto) {
+        ProductEntity nuevoProducto = productService.crearProducto(producto);
+        return ResponseEntity.ok(nuevoProducto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> actualizarProducto(@PathVariable Long id, @RequestBody ProductDTO producto) {
-        ProductDTO actualizado = productService.actualizarProducto(id, producto);
+    public ResponseEntity<ProductEntity> actualizarProducto(@PathVariable("id") Long id, @RequestBody ProductEntity producto) {
+        ProductEntity actualizado = productService.actualizarProducto(id, producto);
         if (actualizado == null) {
             return ResponseEntity.notFound().build();
         }
@@ -46,7 +47,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarProducto(@PathVariable("id") Long id) {
         productService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }

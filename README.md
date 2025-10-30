@@ -98,9 +98,10 @@ Cada servicio tiene sus correspondientes endpoints, y acá se detalla la forma d
   - Crear un carrito  
   ```json
   {
-    "usuarioId": 1,
-    "productoId": 2,
-    "cantidad": 3
+    "Idusuario": 1,
+    "Idproducto": 2,
+    "cantidad": 3,
+    "total": 500
   }
   ```
 

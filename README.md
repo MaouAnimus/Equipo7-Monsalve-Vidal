@@ -30,7 +30,7 @@ EQUIPO 7:
   ```json
   {
     "nombre": "Jonathan",
-    "correo": "jon.vidals@example.com",
+    "email": "jon.vidals@example.com",
     "password": "1234"
   }
   ```

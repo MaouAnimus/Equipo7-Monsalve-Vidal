@@ -31,7 +31,8 @@ EQUIPO 7:
   {
     "nombre": "Jonathan",
     "email": "jon.vidals@example.com",
-    "password": "1234"
+    "password": "1234",
+    "rol": "admin
   }
   ```
 

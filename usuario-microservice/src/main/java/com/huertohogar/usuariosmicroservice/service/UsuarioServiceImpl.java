@@ -32,17 +32,20 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioEntity actualizarUsuario(Long id, UsuarioEntity usuarioActualizado) {
-        Optional<UsuarioEntity> usuarioExistente = usuarioRepository.findById(id);
-        if (usuarioExistente.isPresent()) {
-            UsuarioEntity usuario = usuarioExistente.get();
-            usuario.setNombre(usuarioActualizado.getNombre());
-            usuario.setEmail(usuarioActualizado.getEmail());
-            usuario.setPassword(usuarioActualizado.getPassword());
-            usuario.setRol(usuarioActualizado.getRol());
-            return usuarioRepository.save(usuario);
-        }
-        return null;
+    public UsuarioEntity actualizarUsuario(Long id, UsuarioEntity usuarioDetalles) {
+        UsuarioEntity usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario == null) return null;
+
+        if (usuarioDetalles.getNombre() != null)
+            usuario.setNombre(usuarioDetalles.getNombre());
+        if (usuarioDetalles.getEmail() != null)
+            usuario.setEmail(usuarioDetalles.getEmail());
+        if (usuarioDetalles.getPassword() != null)
+            usuario.setPassword(usuarioDetalles.getPassword());
+        if (usuarioDetalles.getRol() != null)
+            usuario.setRol(usuarioDetalles.getRol());
+
+        return usuarioRepository.save(usuario);
     }
 
     @Override

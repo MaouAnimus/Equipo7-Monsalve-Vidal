@@ -105,9 +105,10 @@ EQUIPO 7:
   - Crear un carrito  
   ```json
   {
-    "usuarioId": 1,
-    "productoId": 2,
-    "cantidad": 3
+    "Idusuario": 1,
+    "Idproducto": 2,
+    "cantidad": 3,
+    "total": 500
   }
   ```
 

@@ -8,12 +8,15 @@ on:
 
 env:
   JAVA_TOOL_OPTIONS: "-Xmx1g"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: us-east-1
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -30,50 +33,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      - name: Build with Maven
+      - name: Build and test Maven projects
         run: mvn -B -DskipTests=false test package
 
-  build-and-push-image:
+  docker-build-push:
     needs: build-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to registry
+      - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker images
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_ORG }}/${{ github.event.repository.name }}:latest
+          tags: ${{ secrets.DOCKER_REGISTRY }}/huertohogar/${{ github.event.repository.name }}:latest
 
-  terraform-deploy:
-    needs: build-and-push-image
+  deploy-aws:
+    needs: docker-build-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout infra
         uses: actions/checkout@v4
         with:
           path: infra
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
-      - name: Terraform Init
-        working-directory: ./infra/terraform
-        run: terraform init
+      - name: Test SQS connection
+        run: |
+          aws sqs send-message \
+            --queue-url https://sqs.us-east-1.amazonaws.com/386667539008/HuertoHogar \
+            --message-body "CI/CD test message"
 
-      - name: Terraform Apply
-        working-directory: ./infra/terraform
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform apply -auto-approve
+      - name: Deploy Lambda (serverless)
+        run: |
+          aws lambda update-function-code \
+            --function-name huertohogar-function \
+            --zip-file fileb://infra/lambda/huertohogar.zip

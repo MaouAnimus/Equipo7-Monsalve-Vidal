@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  producto:
+    image: ${REGISTRY_ORG}/huertohogar-producto:latest
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/productodb
+    networks:
+      - huerto-net
+
+  usuario:
+    image: ${REGISTRY_ORG}/huertohogar-usuario:latest
+    deploy:
+      replicas: 2
+      placement:
+        constraints: [node.role == worker]
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/usuariodb
+    networks:
+      - huerto-net
+
+  carrito:
+    image: ${REGISTRY_ORG}/huertohogar-carrito:latest
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+    environment:
+      - PRODUCTO_SERVICE_URL=http://producto:8081
+      - USUARIO_SERVICE_URL=http://usuario:8082
+      - SQS_QUEUE_URL=${SQS_QUEUE_URL}
+    networks:
+      - huerto-net
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    networks:
+      - huerto-net
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  huerto-net:
+    driver: overlay
+
+volumes:
+  db-data:

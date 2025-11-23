@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: infra-mysql
+    environment:
+      MYSQL_DATABASE: huerto_hogar
+      MYSQL_ROOT_PASSWORD: duoc
+    ports:
+      - "3307:3306"
+    networks:
+      - huerto-red
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-P", "3306", "-uroot", "-pduoc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  core:
+    build: 
+      context: ../core-microservice
+    container_name: core-microservice
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - huerto-red
+
+  usuarios:
+    build:
+      context: ../usuario-microservice
+    container_name: usuario-microservice
+    ports:
+      - "8082:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - huerto-red
+
+  carrito:
+    build:
+      context: ../carrito-microservice
+    container_name: carrito-microservice
+    ports:
+      - "8083:8083"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      core:
+        condition: service_started
+      usuarios:
+        condition: service_started
+    networks:
+      - huerto-red
+
+networks:
+  huerto-red:
+    driver: bridge

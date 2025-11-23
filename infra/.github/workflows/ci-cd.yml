@@ -1,0 +1,35 @@
+name: CI/CD - Huerto Hogar
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        run: docker --version
+
+      - name: Build Docker images
+        run: docker-compose -f docker-compose.yml build --no-cache
+
+      - name: Start services
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Wait for services
+        run: |
+          echo "Esperando 15 segundos a que MySQL y microservicios levanten..."
+          sleep 15
+
+      - name: Show logs
+        run: docker-compose logs --tail=20
+
+

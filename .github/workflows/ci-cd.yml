@@ -50,7 +50,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: carrito-microservice
-          file: ../carrito-microservice/Dockerfile
+          file: carrito-microservice/Dockerfile
           push: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/carrito-microservice:latest
 
@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: core-microservice
-          file: ../core-microservice/Dockerfile
+          file: core-microservice/Dockerfile
           push: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/core-microservice:latest
 
@@ -68,7 +68,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: usuario-microservice
-          file: ../usuario-microservice/Dockerfile
+          file: usuario-microservice/Dockerfile
           push: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/usuario-microservice:latest
 

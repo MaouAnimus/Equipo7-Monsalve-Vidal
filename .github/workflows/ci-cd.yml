@@ -54,7 +54,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/huertohogar:latest
+          tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/huertohogar:latest
 
 
   deploy-aws:

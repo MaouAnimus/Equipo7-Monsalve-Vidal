@@ -54,7 +54,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY }}/huertohogar/${{ github.event.repository.name }}:latest
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/huertohogar:latest
+
 
   deploy-aws:
     needs: docker-build-push

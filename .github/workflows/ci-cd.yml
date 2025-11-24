@@ -16,25 +16,22 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      - name: Build without integration tests
-        run: mvn -B -DskipITs=true -Dspring.test.context.failure.threshold=0 test package
+      - name: Build Maven projects (sin integración)
+        run: mvn -B -DskipITs=true package
 
   docker-build-push:
     needs: build-test
@@ -42,27 +39,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to DockerHub
+      - name: Login DockerHub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker images
+      # CARRITO
+      - name: Build & push carrito-microservice
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./Dockerfile
+          context: carrito-microservice
+          file: ../carrito-microservice/Dockerfile
           push: true
-          tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/huertohogar:latest
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/carrito-microservice:latest
 
+      # CORE
+      - name: Build & push core-microservice
+        uses: docker/build-push-action@v4
+        with:
+          context: core-microservice
+          file: ../core-microservice/Dockerfile
+          push: true
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/core-microservice:latest
+
+      # USUARIO
+      - name: Build & push usuario-microservice
+        uses: docker/build-push-action@v4
+        with:
+          context: usuario-microservice
+          file: ../usuario-microservice/Dockerfile
+          push: true
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/usuario-microservice:latest
 
   deploy-aws:
     needs: docker-build-push
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout infra
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           path: infra
 
@@ -72,7 +86,7 @@ jobs:
           unzip awscliv2.zip
           sudo ./aws/install
 
-      - name: Test SQS connection
+      - name: Test SQS
         run: |
           aws sqs send-message \
             --queue-url https://sqs.us-east-1.amazonaws.com/386667539008/HuertoHogar \

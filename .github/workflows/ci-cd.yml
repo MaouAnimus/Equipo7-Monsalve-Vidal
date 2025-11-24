@@ -80,11 +80,8 @@ jobs:
         with:
           path: infra
 
-      - name: Install AWS CLI
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
+      - name: Check AWS CLI version
+        run: aws --version
 
       - name: Test SQS
         run: |

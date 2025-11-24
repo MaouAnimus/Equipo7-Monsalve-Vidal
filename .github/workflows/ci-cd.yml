@@ -88,5 +88,5 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code \
-            --function-name huertohogar-function \
+            --function-name procesar_sqs_lambda \
             --zip-file fileb://infra/terraform/carrito_lambda.zip

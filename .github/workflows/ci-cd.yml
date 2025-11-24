@@ -11,8 +11,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: us-east-1
-  QUEUE_URL: "https://sqs.us-east-1.amazonaws.com/260075729298/HuertoHogar"
-
+  QUEUE_URL: ${{ secrets.QUEUE_URL }}
 
 jobs:
   build-test:
@@ -32,7 +31,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      - name: Build Maven projects (sin integración)
+      - name: Build Maven projects
         run: mvn -B -DskipITs=true package
 
   docker-build-push:
@@ -47,8 +46,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # CARRITO
-      - name: Build & push carrito-microservice
+      - name: Build and push carrito-microservice
         uses: docker/build-push-action@v4
         with:
           context: carrito-microservice
@@ -56,8 +54,7 @@ jobs:
           push: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/carrito-microservice:latest
 
-      # CORE
-      - name: Build & push core-microservice
+      - name: Build and push core-microservice
         uses: docker/build-push-action@v4
         with:
           context: core-microservice
@@ -65,8 +62,7 @@ jobs:
           push: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/core-microservice:latest
 
-      # USUARIO
-      - name: Build & push usuario-microservice
+      - name: Build and push usuario-microservice
         uses: docker/build-push-action@v4
         with:
           context: usuario-microservice
@@ -79,8 +75,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: infra
 
       - name: Check AWS CLI version
         run: aws --version
@@ -95,4 +89,4 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name huertohogar-function \
-            --zip-file fileb://infra/lambda/huertohogar.zip
+            --zip-file fileb://infra/terraform/carrito_lambda.zip

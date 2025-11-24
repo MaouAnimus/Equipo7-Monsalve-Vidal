@@ -1,0 +1,27 @@
+[33ma649650[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature[m[33m)[m TERRAFORM Y LAMBDA
+[33ma028206[m Simulación de LAMBDA / Consumidor de SQS
+[33m7eaaf7b[m eliminación de terraform
+[33m3123890[m Update main.tf
+[33m0d4d9b7[m Fix db_name attribute in aws_db_instance resource
+[33me012454[m Update Lambda function source file path
+[33m406c026[m Update CI/CD workflow by modifying checkout step
+[33m1750a2d[m Add build and push steps for microservices
+[33m8bedf9f[m Refactor CI/CD workflow for microservice tags
+[33me7e3aa7[m Rename checkout step for clarity
+[33m3e9af26[m Update CI/CD workflow for Docker image builds
+[33m0774c30[m Refactor CI/CD workflow and update deployment steps
+[33m5291f1a[m Add maven-surefire-plugin to skip tests
+[33ma0e162c[m Add ActiveProfiles annotation for test configuration
+[33mccb7efc[m Add ActiveProfiles annotation for test configuration
+[33me784f0b[m Update UsuarioMicroserviceApplicationTests.java
+[33mc856dd1[m Add files via upload
+[33m89d1e38[m Forzando cambios en los tests de los micros
+[33m559864d[m Preparando test
+[33mfb1f78b[m Preparando feature para forzar al main
+[33m84a241a[m[33m ([m[1;31morigin/feature[m[33m)[m Preparando feature
+[33md56ed11[m Preparando feature para forzar al main
+[33m796e63e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Preparando feature para forzar al main
+[33m77e252e[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m Actualización completa de microservicios y Docker
+[33m88d9733[m workflows
+[33ma34f954[m workflows
+[33m93b113a[m[33m ([m[1;32mreemplazo-feature[m[33m, [m[1;32mmi-feature[m[33m, [m[1;32mmaster[m[33m, [m[1;32mfeature-temp[m[33m)[m Servicio SQS, dockers configurado, CI-CD

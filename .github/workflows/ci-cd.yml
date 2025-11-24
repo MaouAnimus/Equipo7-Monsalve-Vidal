@@ -11,7 +11,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: us-east-1
-  QUEUE_URL: ${{ secrets.QUEUE_URL }}
+  QUEUE_URL: "https://sqs.us-east-2.amazonaws.com/260075729298/HuertoHogar"
 
 
 jobs:

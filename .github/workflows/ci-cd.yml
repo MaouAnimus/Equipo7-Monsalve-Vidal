@@ -89,4 +89,4 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name procesar_sqs_lambda \
-            --zip-file fileb://infra/terraform/carrito_lambda.zip
+            --zip-file fileb://infra/terraform/lambda/huertohogar.zip

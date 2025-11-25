@@ -1,16 +1,11 @@
 package com.huertohogar.carritomicroservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "carrito")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "carritos")
 public class CarritoEntity {
 
     @Id
@@ -19,12 +14,26 @@ public class CarritoEntity {
 
     private Long usuarioId;
 
-    private String estado;
-
-    @OneToMany(
-            mappedBy = "carrito",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "carrito", orphanRemoval = true)
     private List<DetalleCarritoEntity> detalles = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public List<DetalleCarritoEntity> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetalleCarritoEntity> detalles) {
+        this.detalles = detalles;
+    }
 }

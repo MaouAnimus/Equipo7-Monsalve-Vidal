@@ -1,109 +1,80 @@
 package com.huertohogar.carritomicroservice.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.huertohogar.carritomicroservice.entity.CarritoEntity;
 import com.huertohogar.carritomicroservice.entity.DetalleCarritoEntity;
+import com.huertohogar.carritomicroservice.repository.CarritoRepository;
+import com.huertohogar.carritomicroservice.repository.DetalleCarritoRepository;
+import com.huertohogar.carritomicroservice.sqs.SqsPublisher;
+import org.springframework.stereotype.Service;
 
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CarritoServiceImpl implements CarritoService {
 
-    private final List<CarritoEntity> carritos = new ArrayList<>();
-    private final SqsClient sqsClient;
+    private final CarritoRepository carritoRepository;
+    private final DetalleCarritoRepository detalleRepository;
+    private final SqsPublisher publisher;
 
-    @Value("${aws.sqs.queue-url}")
-    private String queueUrl;
-
-    private static long carritoIdCounter = 1;
-    private static long detalleIdCounter = 1;
-
-    public CarritoServiceImpl(SqsClient sqsClient) {
-        this.sqsClient = sqsClient;
+    public CarritoServiceImpl(CarritoRepository carritoRepository,
+                              DetalleCarritoRepository detalleRepository,
+                              SqsPublisher publisher) {
+        this.carritoRepository = carritoRepository;
+        this.detalleRepository = detalleRepository;
+        this.publisher = publisher;
     }
-
     @Override
     public List<CarritoEntity> listarCarritos() {
-        return carritos;
-    }
-
-    @Override
-    public CarritoEntity obtenerCarritoPorId(Long id) {
-        return carritos.stream()
-                .filter(c -> Objects.equals(c.getId(), id))
-                .findFirst()
-                .orElse(null);
+        return carritoRepository.findAll();
     }
 
     @Override
     public CarritoEntity crearCarrito(CarritoEntity carrito) {
-        if (carrito.getId() == null) carrito.setId(carritoIdCounter++);
-        if (carrito.getDetalles() == null) carrito.setDetalles(new ArrayList<>());
-        carritos.add(carrito);
-        return carrito;
+        return carritoRepository.save(carrito);
     }
 
     @Override
-    public void eliminarCarrito(Long id) {
-        carritos.removeIf(c -> Objects.equals(c.getId(), id));
+    public CarritoEntity obtenerCarrito(Long id) {
+        return carritoRepository.findById(id).orElse(null);
     }
 
     @Override
     public CarritoEntity agregarProducto(Long carritoId, DetalleCarritoEntity detalle) {
-        CarritoEntity carrito = obtenerCarritoPorId(carritoId);
-        if (carrito != null) {
-            if (detalle.getId() == null) detalle.setId(detalleIdCounter++);
-            detalle.setCarrito(carrito);
-            carrito.getDetalles().add(detalle);
+        Optional<CarritoEntity> carritoOpt = carritoRepository.findById(carritoId);
+        if (carritoOpt.isEmpty()) return null;
 
-            enviarMensaje("Producto agregado: " + detalle.getProductoId() + " cantidad: " + detalle.getCantidad());
-        }
-        return carrito;
+        CarritoEntity carrito = carritoOpt.get();
+
+        detalle.setCarrito(carrito);
+        detalleRepository.save(detalle);
+
+        publisher.publicar("Producto agregado: " + detalle.getProductoId());
+
+        return carritoRepository.findById(carritoId).orElse(null);
     }
 
     @Override
     public CarritoEntity actualizarCantidad(Long carritoId, Long detalleId, Integer cantidad) {
-        CarritoEntity carrito = obtenerCarritoPorId(carritoId);
-        if (carrito != null) {
-            Optional<DetalleCarritoEntity> detalleOpt = carrito.getDetalles().stream()
-                    .filter(d -> Objects.equals(d.getId(), detalleId))
-                    .findFirst();
-            if (detalleOpt.isPresent()) {
-                detalleOpt.get().setCantidad(cantidad);
-                enviarMensaje("Cantidad actualizada: detalle " + detalleId + " nueva cantidad: " + cantidad);
-            }
-        }
-        return carrito;
+        Optional<DetalleCarritoEntity> detalleOpt = detalleRepository.findById(detalleId);
+        if (detalleOpt.isEmpty()) return null;
+
+        DetalleCarritoEntity detalle = detalleOpt.get();
+        detalle.setCantidad(cantidad);
+        detalleRepository.save(detalle);
+
+        publisher.publicar("Cantidad actualizada: " + detalleId + " -> " + cantidad);
+
+        return carritoRepository.findById(carritoId).orElse(null);
     }
 
     @Override
     public CarritoEntity eliminarProducto(Long carritoId, Long detalleId) {
-        CarritoEntity carrito = obtenerCarritoPorId(carritoId);
-        if (carrito != null) {
-            boolean removed = carrito.getDetalles().removeIf(d -> Objects.equals(d.getId(), detalleId));
-            if (removed) enviarMensaje("Producto eliminado: detalle " + detalleId);
-        }
-        return carrito;
-    }
+        if (!detalleRepository.existsById(detalleId)) return null;
 
-    private void enviarMensaje(String mensaje) {
-        try {
-            sqsClient.sendMessage(SendMessageRequest.builder()
-                    .queueUrl(queueUrl)
-                    .messageBody(mensaje)
-                    .build());
-            System.out.println("Mensaje enviado a SQS: " + mensaje);
-        } catch (Exception e) {
-            System.out.println("Error enviando mensaje a SQS:");
-            e.printStackTrace();
-        }
+        detalleRepository.deleteById(detalleId);
+        publisher.publicar("Detalle eliminado: " + detalleId);
+
+        return carritoRepository.findById(carritoId).orElse(null);
     }
 }

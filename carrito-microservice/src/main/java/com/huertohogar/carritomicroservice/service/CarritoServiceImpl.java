@@ -4,7 +4,6 @@ import com.huertohogar.carritomicroservice.entity.CarritoEntity;
 import com.huertohogar.carritomicroservice.entity.DetalleCarritoEntity;
 import com.huertohogar.carritomicroservice.repository.CarritoRepository;
 import com.huertohogar.carritomicroservice.repository.DetalleCarritoRepository;
-import com.huertohogar.carritomicroservice.sqs.SqsPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,15 +14,13 @@ public class CarritoServiceImpl implements CarritoService {
 
     private final CarritoRepository carritoRepository;
     private final DetalleCarritoRepository detalleRepository;
-    private final SqsPublisher publisher;
 
     public CarritoServiceImpl(CarritoRepository carritoRepository,
-                              DetalleCarritoRepository detalleRepository,
-                              SqsPublisher publisher) {
+                              DetalleCarritoRepository detalleRepository) {
         this.carritoRepository = carritoRepository;
         this.detalleRepository = detalleRepository;
-        this.publisher = publisher;
     }
+
     @Override
     public List<CarritoEntity> listarCarritos() {
         return carritoRepository.findAll();
@@ -45,11 +42,8 @@ public class CarritoServiceImpl implements CarritoService {
         if (carritoOpt.isEmpty()) return null;
 
         CarritoEntity carrito = carritoOpt.get();
-
         detalle.setCarrito(carrito);
         detalleRepository.save(detalle);
-
-        publisher.publicar("Producto agregado: " + detalle.getProductoId());
 
         return carritoRepository.findById(carritoId).orElse(null);
     }
@@ -63,8 +57,6 @@ public class CarritoServiceImpl implements CarritoService {
         detalle.setCantidad(cantidad);
         detalleRepository.save(detalle);
 
-        publisher.publicar("Cantidad actualizada: " + detalleId + " -> " + cantidad);
-
         return carritoRepository.findById(carritoId).orElse(null);
     }
 
@@ -73,7 +65,6 @@ public class CarritoServiceImpl implements CarritoService {
         if (!detalleRepository.existsById(detalleId)) return null;
 
         detalleRepository.deleteById(detalleId);
-        publisher.publicar("Detalle eliminado: " + detalleId);
 
         return carritoRepository.findById(carritoId).orElse(null);
     }

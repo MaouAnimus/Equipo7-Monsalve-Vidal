@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.huertohogar.coremicroservice.entity.ProductEntity;
 import com.huertohogar.coremicroservice.repository.ProductRepository;
+import com.huertohogar.coremicroservice.sqs.StockPublisher;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+    @Autowired
+    private StockPublisher stockPublisher;
 
     @Autowired
     private ProductRepository productRepository;
@@ -32,18 +35,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductEntity actualizarProducto(Long id, ProductEntity productoDetalles) {
+    public ProductEntity actualizarProducto(Long id, ProductEntity detalles) {
         ProductEntity producto = productRepository.findById(id).orElse(null);
         if (producto == null) return null;
 
-        if (productoDetalles.getNombre() != null)
-            producto.setNombre(productoDetalles.getNombre());
-        if (productoDetalles.getPrecio() != null)
-            producto.setPrecio(productoDetalles.getPrecio());
-        if (productoDetalles.getStock() != null)
-            producto.setStock(productoDetalles.getStock());
-        if (productoDetalles.getCategoria() != null)
-            producto.setCategoria(productoDetalles.getCategoria());
+
+        if (detalles.getStock() != null && !detalles.getStock().equals(producto.getStock())) {
+            int newStock = detalles.getStock();
+            producto.setStock(newStock);
+            stockPublisher.publicarCambioStock(id, newStock);
+        }
+
+        if (detalles.getNombre() != null) producto.setNombre(detalles.getNombre());
+        if (detalles.getPrecio() != null) producto.setPrecio(detalles.getPrecio());
+        if (detalles.getCategoria() != null) producto.setCategoria(detalles.getCategoria());
 
         return productRepository.save(producto);
     }
